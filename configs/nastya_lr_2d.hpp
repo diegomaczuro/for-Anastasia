@@ -25,7 +25,7 @@
 //Write
 #include "VtkMeshWriter.hpp"
 
-const int MAGIC_NUMBER = 361+1;//TODO Тут написать сколько строк в data.csv
+const int MAGIC_NUMBER = 361;//TODO Тут написать сколько строк в data.csv
 
 class FreiburgHeartCellFactory : public AbstractCardiacCellFactory<2> // <3> here
 {
@@ -120,7 +120,7 @@ public:
         HeartConfig::Instance()->SetIntracellularConductivities(Create_c_vector(3.4, 0.6));//, 0.6));     
         HeartConfig::Instance()->SetExtracellularConductivities(Create_c_vector(1.2, 0.8));//, 0.8));//mS/cm
 
-        HeartConfig::Instance()->SetSimulationDuration(500);//500ms
+        HeartConfig::Instance()->SetSimulationDuration(15);//500ms
         HeartConfig::Instance()->SetOutputDirectory("nastya_lr");
         HeartConfig::Instance()->SetOutputFilenamePrefix("results");
         HeartConfig::Instance()->SetVisualizeWithVtk(false);
