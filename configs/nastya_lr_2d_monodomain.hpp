@@ -38,7 +38,7 @@ public:
     {
         m = boost::numeric::ublas::matrix<double>(MAGIC_NUMBER, 9);
 
-        std::ifstream infile("heart/test/nastya2/chaste/data.csv");
+        std::ifstream infile("heart/test/nastya2/chaste/MONODOMAIN_2D/data.csv");
         double idx, x, y, z, d_Ks, amplitude, duration, time, model;
         int line_num = 0;
         while (infile >> idx >> x >> y >> z >> d_Ks >> amplitude >> duration >> time >> model)
@@ -78,7 +78,7 @@ public:
 
         for(int idx=0; idx < MAGIC_NUMBER; idx++){
             if ((x - m(idx,1))*(x - m(idx,1)) + (y - m(idx,2))*(y - m(idx,2))  < 0.1*0.1) { //TODO Тут менять ход волокон
-                boost::shared_ptr <SimpleStimulus> mpStimulus(new SimpleStimulus(-100000.0, 2.0, 0.0)); // mpStimulus(new SimpleStimulus(m(idx,5), m(idx,6), m(idx,7)));
+                boost::shared_ptr <SimpleStimulus> mpStimulus(new SimpleStimulus(-20000.0, 2.0, 0.0)); // mpStimulus(new SimpleStimulus(m(idx,5), m(idx,6), m(idx,7)));
                 //TODO: Memory leak
             	cell = new CellLuoRudy1991FromCellMLBackwardEuler(mpSolver, mpStimulus);
                 break;
@@ -114,14 +114,14 @@ public:
         PRINT_VARIABLE(size);
 
 
-        HeartConfig::Instance()->SetMeshFileName("heart/test/nastya2/chaste/data", cp::media_type::Orthotropic);
+        HeartConfig::Instance()->SetMeshFileName("heart/test/nastya2/chaste/MONODOMAIN_2D/data", cp::media_type::Orthotropic);
 
 
         HeartConfig::Instance()->SetIntracellularConductivities(Create_c_vector(3.4, 0.6));//, 0.6));     
         HeartConfig::Instance()->SetExtracellularConductivities(Create_c_vector(1.2, 0.8));//, 0.8));//mS/cm
 
         HeartConfig::Instance()->SetSimulationDuration(15);//500ms
-        HeartConfig::Instance()->SetOutputDirectory("nastya_lr");
+        HeartConfig::Instance()->SetOutputDirectory("nastya_lr_2d_monodomain");
         HeartConfig::Instance()->SetOutputFilenamePrefix("results");
         HeartConfig::Instance()->SetVisualizeWithVtk(false);
         HeartConfig::Instance()->SetOutputUsingOriginalNodeOrdering(false);
@@ -130,21 +130,21 @@ public:
         HeartConfig::Instance()->SetCapacitance(0.7); // uF/cm^2
 
         FreiburgHeartCellFactory cell_factory;
-        BidomainProblem<2> bidomain_problem( &cell_factory );
-        TRACE("bidomain_problem(.) complete!");
+        MonodomainProblem<2> monodomain_problem( &cell_factory );
+        TRACE("monodomain_problem(.) complete!");
 
-        bidomain_problem.SetWriteInfo();
+        monodomain_problem.SetWriteInfo();
         TRACE("SetWriteInfo() complete!");
-        bidomain_problem.Initialise();
+        monodomain_problem.Initialise();
         TRACE("Initialise() complete!");
-        bidomain_problem.Solve();
+        monodomain_problem.Solve();
 
 
-        AbstractTetrahedralMesh<2,2>* p_mesh = &(bidomain_problem.rGetMesh());
-        VtkMeshWriter<2,2> vtk_writer("./nastya_lr/", "init_mesh_1", false);
+        AbstractTetrahedralMesh<2,2>* p_mesh = &(monodomain_problem.rGetMesh());
+        VtkMeshWriter<2,2> vtk_writer("./nastya_lr_2d_monodomain/", "init_mesh_1", false);
         vtk_writer.WriteFilesUsingMesh(*p_mesh);
 
-        VtkMeshWriter<2,2> vtk_writer2("./nastya_lr/", "init_mesh_2", false);
+        VtkMeshWriter<2,2> vtk_writer2("./nastya_lr_2d_monodomain/", "init_mesh_2", false);
         std::string original_file = p_mesh->GetMeshFileBaseName();
         std::auto_ptr<AbstractMeshReader<2, 2> > p_original_mesh_reader = GenericMeshReader<2, 2>(original_file);
         vtk_writer2.WriteFilesUsingMeshReader(*p_original_mesh_reader);
